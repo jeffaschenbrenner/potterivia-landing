@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potterivia — The Wizarding Trivia App</title>
+  <meta name="description" content="Potterivia is a Harry Potter trivia app. Get sorted into your Hogwarts house, answer AI-generated questions, and compete for the House Cup." />
+  <meta property="og:title" content="Potterivia — The Wizarding Trivia App" />
+  <meta property="og:description" content="Get sorted. Answer trivia. Win the House Cup." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0a0a12;
+      --parchment: #f5efe0;
+      --gold:      #c9922a;
+      --gold-lt:   #e8b84b;
+      --gold-dk:   #8a5e10;
+      --crimson:   #7a0c0c;
+      --mist:      #d6cfc0;
+      --dim:       #6b6050;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--parchment);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars ── */
+    .stars {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--lo, 0.15); transform: scale(1); }
+      50%       { opacity: var(--hi, 0.8);  transform: scale(1.3); }
+    }
+
+    /* ── Layout ── */
+    .page { position: relative; z-index: 1; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: linear-gradient(to bottom, rgba(10,10,18,0.95), transparent);
+    }
+    .nav-logo {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .nav-cta {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold);
+      padding: 0.5rem 1.4rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+    }
+
+    /* Radial glow behind hero text */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 30%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(ellipse, rgba(201,146,42,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(3rem, 10vw, 7.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.01em;
+      background: linear-gradient(160deg, var(--gold-lt) 0%, var(--gold) 45%, var(--gold-dk) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.4s forwards;
+    }
+
+    .hero-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 2rem auto;
+      width: min(500px, 80vw);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+    .hero-divider span { color: var(--gold); font-size: 0.9rem; letter-spacing: 0.4em; }
+    .hero-divider::before, .hero-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dk), transparent);
+    }
+
+    .hero-sub {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--mist);
+      max-width: 540px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.75s forwards;
+    }
+
+    .hero-badges {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.95s forwards;
+    }
+    .badge {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,146,42,0.3);
+      padding: 0.5rem 1.1rem;
+      border-radius: 2px;
+      background: rgba(201,146,42,0.06);
+    }
+
+    .hero-notify {
+      margin-top: 3.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.1s forwards;
+    }
+    .notify-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.8rem;
+    }
+    .notify-form {
+      display: flex; gap: 0;
+      border: 1px solid rgba(201,146,42,0.4);
+      border-radius: 3px;
+      overflow: hidden;
+      max-width: 400px;
+    }
+    .notify-form input {
+      flex: 1;
+      padding: 0.8rem 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border: none; outline: none;
+      color: var(--parchment);
+      font-family: 'EB Garamond', serif;
+      font-size: 1rem;
+    }
+    .notify-form input::placeholder { color: var(--dim); }
+    .notify-form button {
+      padding: 0.8rem 1.4rem;
+      background: var(--gold);
+      border: none; cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      font-weight: 700;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .notify-form button:hover { background: var(--gold-lt); }
+    .notify-success {
+      display: none;
+      font-style: italic;
+      color: var(--gold);
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .scroll-hint {
+      position: relative;
+      margin: 2rem auto 0;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      opacity: 0;
+      animation: fadeIn 1s ease 1.8s forwards;
+      max-width: 100%;
+    }
+    .scroll-hint span {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .scroll-arrow {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--gold-dk), transparent);
+      animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+      50%       { opacity: 1;   transform: scaleY(1); }
+    }
+
+    /* ── Section shared ── */
+    section {
+      padding: 6rem 2rem;
+      position: relative;
+    }
+    .section-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--parchment);
+      margin-bottom: 1.2rem;
+    }
+    .section-body {
+      color: var(--mist);
+      font-size: 1.05rem;
+      max-width: 580px;
+    }
+
+    /* ── Houses Section ── */
+    .houses-section {
+      background: linear-gradient(to bottom, transparent, rgba(201,146,42,0.04), transparent);
+      border-top: 1px solid rgba(201,146,42,0.1);
+      border-bottom: 1px solid rgba(201,146,42,0.1);
+    }
+    .houses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .house-card {
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 2rem 1.5rem;
+      background: var(--bg-color);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .house-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--glow-color);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .house-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px var(--shadow-color); }
+    .house-card:hover::before { opacity: 1; }
+    .house-card.gryffindor { --border-color: rgba(174,0,1,0.4); --bg-color: rgba(116,0,1,0.08); --glow-color: radial-gradient(ellipse at top, rgba(174,0,1,0.1), transparent); --shadow-color: rgba(174,0,1,0.2); }
+    .house-card.hufflepuff { --border-color: rgba(236,185,57,0.4); --bg-color: rgba(55,46,41,0.2);  --glow-color: radial-gradient(ellipse at top, rgba(236,185,57,0.1), transparent); --shadow-color: rgba(236,185,57,0.2); }
+    .house-card.ravenclaw  { --border-color: rgba(34,47,91,0.6);  --bg-color: rgba(14,26,64,0.25); --glow-color: radial-gradient(ellipse at top, rgba(34,47,91,0.2), transparent);   --shadow-color: rgba(34,47,91,0.3); }
+    .house-card.slytherin  { --border-color: rgba(42,98,61,0.4);  --bg-color: rgba(26,71,42,0.1);  --glow-color: radial-gradient(ellipse at top, rgba(42,98,61,0.1), transparent);   --shadow-color: rgba(42,98,61,0.2); }
+    .house-animal { font-size: 2.8rem; margin-bottom: 1rem; display: block; }
+    .house-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--parchment);
+      margin-bottom: 0.4rem;
+    }
+    .house-trait {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--dim);
+    }
+
+    /* ── Features Section ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+    }
+    .feature {
+      display: flex; gap: 1.2rem;
+    }
+    .feature-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .feature-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+    .feature-desc {
+      font-size: 0.95rem;
+      color: var(--mist);
+      line-height: 1.65;
+    }
+
+    /* ── Coming Soon Banner ── */
+    .coming-soon {
+      text-align: center;
+      padding: 5rem 2rem;
+      border-top: 1px solid rgba(201,146,42,0.1);
+    }
+    .coming-soon-inner { max-width: 600px; margin: 0 auto; }
+    .platform-badges {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin: 2.5rem 0;
+    }
+    .platform-badge {
+      display: inline-flex; align-items: center; gap: 0.9rem;
+      min-width: 200px;
+      padding: 0.85rem 1.1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      background: rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+      color: var(--parchment);
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .platform-badge:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.14);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+    .platform-badge .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.2rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.1);
+    }
+    .platform-badge .platform-copy {
+      display: flex; flex-direction: column;
+      text-align: left;
+      line-height: 1.05;
+    }
+    .platform-badge .platform-copy .badge-line {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mist);
+    }
+    .platform-badge .platform-copy strong {
+      display: block;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1rem;
+      letter-spacing: 0;
+      color: var(--parchment);
+      margin-top: 0.08rem;
+    }
+
+    /* ── Sponsored ── */
+    .sponsored {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .sponsored-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 1.2rem;
+    }
+    .sponsored-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 3px;
+      padding: 1rem 2rem;
+      background: rgba(255,255,255,0.02);
+      max-width: 500px;
+    }
+    .sponsored-scroll { font-size: 1.6rem; }
+    .sponsored-text {
+      text-align: left;
+      font-size: 0.9rem;
+      color: var(--dim);
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .sponsored-text strong {
+      color: var(--mist);
+      font-style: normal;
+      font-weight: 500;
+    }
+    .sponsored-link {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--gold-dk);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .sponsored-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .footer-logo {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.9rem;
+      color: var(--gold-dk);
+    }
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--dim);
+      font-style: italic;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.5rem; }
+      .notify-form { flex-direction: column; }
+      .notify-form button { width: 100%; padding: 0.9rem; }
+      footer { flex-direction: column; text-align: center; }
+      .sponsored-content { flex-direction: column; text-align: center; }
+      .sponsored-text { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<div class="page">
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">Potterivia</a>
+    <a href="#notify" class="nav-cta">Get Notified</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Coming Soon to iOS &amp; Android</p>
+    <h1 class="hero-title">Potterivia</h1>
+
+    <div class="hero-divider"><span>✦ ✦ ✦</span></div>
+
+    <p class="hero-sub">
+      Get sorted into your Hogwarts house. Answer AI-crafted wizarding trivia.
+      Earn points for your house in the race for the House Cup.
+    </p>
+
+    <div class="hero-badges">
+      <div class="badge">🎩 Sorting Hat Quiz</div>
+      <div class="badge">⚡ AI-Generated Questions</div>
+      <div class="badge">🏆 Live House Cup</div>
+      <div class="badge">⏱ Speed Bonuses</div>
+    </div>
+
+    <div class="hero-notify" id="notify">
+      <p class="notify-label">Be first to know when we launch</p>
+      <div class="notify-form">
+        <input type="email" id="emailInput" placeholder="your@email.com" />
+        <button onclick="handleNotify()">Notify Me</button>
+      </div>
+      <p class="notify-success" id="notifySuccess">
+        🦉 Your owl is on its way. We'll be in touch!
+      </p>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- Houses -->
+  <section class="houses-section">
+    <div class="section-inner">
+      <p class="section-label reveal">The Four Houses</p>
+      <h2 class="section-title reveal reveal-delay-1">Where will the Sorting Hat place you?</h2>
+      <p class="section-body reveal reveal-delay-2">
+        Answer eight questions drawn from the depths of the hat's ancient wisdom.
+        Your house shapes your trivia journey — and your points go toward its glory.
+      </p>
+      <div class="houses-grid">
+        <div class="house-card gryffindor reveal reveal-delay-1">
+          <span class="house-animal">🦁</span>
+          <p class="house-name">Gryffindor</p>
+          <p class="house-trait">Courage, nerve &amp; chivalry</p>
+        </div>
+        <div class="house-card hufflepuff reveal reveal-delay-2">
+          <span class="house-animal">🦡</span>
+          <p class="house-name">Hufflepuff</p>
+          <p class="house-trait">Hard work, loyalty &amp; patience</p>
+        </div>
+        <div class="house-card ravenclaw reveal reveal-delay-3">
+          <span class="house-animal">🦅</span>
+          <p class="house-name">Ravenclaw</p>
+          <p class="house-trait">Wit, wisdom &amp; creativity</p>
+        </div>
+        <div class="house-card slytherin reveal reveal-delay-4">
+          <span class="house-animal">🐍</span>
+          <p class="house-name">Slytherin</p>
+          <p class="house-trait">Ambition, cunning &amp; resourcefulness</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section>
+    <div class="section-inner">
+      <p class="section-label reveal">How It Works</p>
+      <h2 class="section-title reveal reveal-delay-1">Every question is a fresh challenge</h2>
+      <div class="features-grid">
+        <div class="feature reveal reveal-delay-1">
+          <span class="feature-icon">🤖</span>
+          <div>
+            <p class="feature-title">AI-Crafted Questions</p>
+            <p class="feature-desc">Questions are generated live by Claude, Anthropic's AI — so no two games are ever the same. Across 10 categories, from Spells to Horcruxes.</p>
+          </div>
+        </div>
+        <div class="feature reveal reveal-delay-2">
+          <span class="feature-icon">⏱</span>
+          <div>
+            <p class="feature-title">Speed Matters</p>
+            <p class="feature-desc">Answer fast, earn more. Each correct answer gives base points × difficulty multiplier plus up to 50 speed bonus points.</p>
+          </div>
+        </div>
+        <div class="feature reveal reveal-delay-3">
+          <span class="feature-icon">🏆</span>
+          <div>
+            <p class="feature-title">The House Cup</p>
+            <p class="feature-desc">Your points roll up to your house's running total. Compete globally — as an individual and as part of your house — on live leaderboards.</p>
+          </div>
+        </div>
+        <div class="feature reveal reveal-delay-1">
+          <span class="feature-icon">🎯</span>
+          <div>
+            <p class="feature-title">Choose Your Difficulty</p>
+            <p class="feature-desc">Easy, Medium, Hard, or let the Sorting Hat decide. Harder questions earn more points, but the clock is always ticking.</p>
+          </div>
+        </div>
+        <div class="feature reveal reveal-delay-2">
+          <span class="feature-icon">📖</span>
+          <div>
+            <p class="feature-title">Learn As You Play</p>
+            <p class="feature-desc">Every answer comes with an AI-written explanation, so even a wrong answer teaches you something new about the wizarding world.</p>
+          </div>
+        </div>
+        <div class="feature reveal reveal-delay-3">
+          <span class="feature-icon">🔥</span>
+          <div>
+            <p class="feature-title">Streak Tracking</p>
+            <p class="feature-desc">String together perfect games to build your streak. Your best streak is recorded forever on your wizarding profile.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon -->
+  <section class="coming-soon">
+    <div class="coming-soon-inner">
+      <p class="section-label reveal">In Development</p>
+      <h2 class="section-title reveal reveal-delay-1">Launching on iOS &amp; Android</h2>
+      <p class="section-body reveal reveal-delay-2" style="margin: 0 auto;">
+        Potterivia is currently in development. Sign up above to be notified the moment it arrives in the App Store and Google Play.
+      </p>
+      <div class="platform-badges reveal reveal-delay-3">
+        <a href="#" class="platform-badge" aria-label="Download on the App Store">
+          <span class="icon"></span>
+          <span class="platform-copy"><span class="badge-line">Download on the</span><strong>App Store</strong></span>
+        </a>
+        <a href="#" class="platform-badge" aria-label="Get it on Google Play">
+          <span class="icon">▶</span>
+          <span class="platform-copy"><span class="badge-line">Get it on</span><strong>Google Play</strong></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sponsored (low-key ad placement) -->
+  <div class="sponsored">
+    <p class="sponsored-label">From the Owl Post — Sponsored</p>
+    <div class="sponsored-content">
+      <span class="sponsored-scroll">📚</span>
+      <p class="sponsored-text">
+        <strong>Your ad could live here.</strong> Reach Harry Potter fans who love trivia, books, and all things magical.
+        Tasteful placements only — no popups, no autoplay.
+      </p>
+      <a href="mailto:hello@potterivia.com" class="sponsored-link">Enquire →</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-logo">Potterivia</span>
+    <p class="footer-note">Not affiliated with Warner Bros. or J.K. Rowling. Fan-made with ⚡</p>
+  </footer>
+
+</div>
+
+<script>
+  // ── Generate stars ──
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.2 + 0.4;
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      --d:${(Math.random()*3+2).toFixed(1)}s;
+      --delay:-${(Math.random()*5).toFixed(1)}s;
+      --lo:${(Math.random()*0.15+0.05).toFixed(2)};
+      --hi:${(Math.random()*0.6+0.3).toFixed(2)};
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Notify form ──
+  function handleNotify() {
+    const input = document.getElementById('emailInput');
+    const success = document.getElementById('notifySuccess');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.borderBottom = '1px solid #c9922a';
+      input.focus();
+      return;
+    }
+    // Replace this with your actual email capture logic
+    // e.g. fetch to a Netlify function, Formspree, or Mailchimp endpoint
+    input.parentElement.style.display = 'none';
+    success.style.display = 'block';
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleNotify();
+  });
+</script>
+
+</body>
+</html>
