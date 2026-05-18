@@ -739,10 +739,22 @@
       input.focus();
       return;
     }
-    // Replace this with your actual email capture logic
-    // e.g. fetch to a Netlify function, Formspree, or Mailchimp endpoint
-    input.parentElement.style.display = 'none';
-    success.style.display = 'block';
+    fetch('https://formspree.io/f/xykvyaep', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+      .then(res => {
+        if (res.ok) {
+          input.parentElement.style.display = 'none';
+          success.style.display = 'block';
+        } else {
+          input.style.borderBottom = '1px solid #c9922a';
+        }
+      })
+      .catch(() => {
+        input.style.borderBottom = '1px solid #c9922a';
+      });
   }
 
   document.getElementById('emailInput').addEventListener('keydown', (e) => {
