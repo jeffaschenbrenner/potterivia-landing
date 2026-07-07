@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Your Account — Potterivia</title>
+  <meta name="description" content="How to delete your Potterivia account and data." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0a0a12" />
+  <link rel="canonical" href="https://potterivia.com/delete-account" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-apple.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0a0a12;
+      --parchment: #f5efe0;
+      --gold:      #c9922a;
+      --gold-lt:   #e8b84b;
+      --gold-dk:   #8a5e10;
+      --crimson:   #7a0c0c;
+      --mist:      #d6cfc0;
+      --dim:       #6b6050;
+    }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
+      background: var(--ink);
+      color: var(--parchment);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: linear-gradient(to bottom, rgba(10,10,18,0.97), transparent);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      object-fit: contain;
+    }
+    .nav-logo-text {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+    .nav-back {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mist);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .nav-back:hover { opacity: 1; }
+
+    /* ── Content ── */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 8rem 2rem 5rem;
+    }
+
+    .page-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      color: var(--gold);
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .effective-date {
+      font-size: 0.85rem;
+      color: var(--dim);
+      font-style: italic;
+      margin-bottom: 3rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(201,146,42,0.2);
+      margin: 2.5rem 0;
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    p { margin-bottom: 1rem; color: var(--mist); }
+
+    ul, ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+      color: var(--mist);
+    }
+    ul li, ol li { margin-bottom: 0.4rem; }
+
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 2.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 0.45rem;
+      text-decoration: none;
+    }
+    .footer-logo-icon { width: 22px; height: 22px; object-fit: contain; opacity: 0.7; }
+    .footer-logo-text { font-family: 'Cinzel Decorative', serif; font-size: 0.9rem; color: var(--gold-dk); }
+    .footer-note { font-size: 0.8rem; color: var(--dim); font-style: italic; }
+    .footer-link { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold-dk); text-decoration: none; transition: color 0.2s; }
+    .footer-link:hover { color: var(--gold); }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.5rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="favicon-transparent.png" alt="" class="nav-logo-icon" onerror="this.style.display='none'" />
+      <span class="nav-logo-text">Potterivia</span>
+    </a>
+    <a href="/" class="nav-back">← Back to Home</a>
+  </nav>
+
+  <main class="page">
+
+    <p class="page-eyebrow">Account</p>
+    <h1>Delete Your Account</h1>
+    <p class="effective-date">Last updated: July 7, 2026</p>
+
+    <p>You can permanently delete your Potterivia account and all associated data at any time, either from within the app or by contacting us directly.</p>
+
+    <hr class="divider" />
+
+    <h2>Option 1: Delete In-App</h2>
+    <ol>
+      <li>Open Potterivia and sign in</li>
+      <li>Go to the <strong>Profile</strong> tab</li>
+      <li>Scroll down and select <strong>Delete Account</strong></li>
+      <li>Confirm the deletion when prompted</li>
+    </ol>
+    <p>Your account is deleted immediately and permanently — this cannot be undone.</p>
+
+    <hr class="divider" />
+
+    <h2>Option 2: Request Deletion by Email</h2>
+    <p>If you no longer have the app installed, or can't sign in, email us at <a href="mailto:hello@potterivia.com">hello@potterivia.com</a> from the email address associated with your account and request deletion. We'll delete your account and confirm once it's done.</p>
+
+    <hr class="divider" />
+
+    <h2>What Gets Deleted</h2>
+    <p>Deleting your account permanently removes:</p>
+    <ul>
+      <li>Your account credentials (email, login access)</li>
+      <li>Your profile — username, display name, chosen house, profile icon</li>
+      <li>Your gameplay history — scores, streaks, answered questions, badges and titles earned</li>
+      <li>Your entries on the leaderboard and House Cup standings</li>
+    </ul>
+    <p>This data is removed right away and is not recoverable after deletion.</p>
+
+    <hr class="divider" />
+
+    <h2>Questions</h2>
+    <p>If you have any questions about account deletion or what data we hold, see our <a href="/privacy">Privacy Policy</a> or contact us at <a href="mailto:hello@potterivia.com">hello@potterivia.com</a>.</p>
+
+  </main>
+
+  <footer>
+    <a href="/" class="footer-logo">
+      <img src="favicon-transparent.png" alt="" class="footer-logo-icon" onerror="this.style.display='none'" />
+      <span class="footer-logo-text">Potterivia</span>
+    </a>
+    <p class="footer-note">Not affiliated with Warner Bros. or J.K. Rowling. Fan-made with ⚡</p>
+    <a href="/" class="footer-link">← Home</a>
+  </footer>
+
+</body>
+</html>
